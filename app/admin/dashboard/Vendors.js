@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Search,
-  Edit,
-  Trash2,
-  Eye,
-  X,
-  UserPlus,
-  CheckCircle,
-} from "lucide-react";
+import {Search, Edit, Trash2, Eye, X, UserPlus, CheckCircle,} from "lucide-react";
 
 export default function Vendors() {
   const [searchTerm, setSearchTerm] = useState("");
