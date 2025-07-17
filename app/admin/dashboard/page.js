@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Package, 
-  ShoppingCart, 
-  TrendingUp, 
+import {
+  LayoutDashboard,
+  Users,
+  Package,
+  ShoppingCart,
+  TrendingUp,
   Settings,
   LogOut,
   Bell,
@@ -29,10 +29,33 @@ import {
   Star,
   PlusCircle,
   Edit,
-  ChevronRight
+  ChevronRight,
+  ArrowUpRight,
+  ArrowDownRight,
+  Target,
+  BookOpen,
+  MessageSquare,
+  CreditCard,
+  BarChart3,
+  Workflow,
+  Contact,
+  HelpCircle,
+  Zap,
+  Flame,
+  Timer,
+  Wallet,
+  ThumbsUp,
+  Percent,
+  IndianRupee
 } from 'lucide-react';
 
+import ServicesPage from './ServicesPage';
+import ProductPage from './ProductPage';
+import BundlePage from './BundlePage';
+import EmployeeHoursPage from './EmployeeHoursPage';
+
 // Import the actual components
+import TasksPage from './TasksPage';
 import Orders from './Orders';
 import Agencies from './Agencies';
 import Vendors from './Vendors';
@@ -40,137 +63,373 @@ import Items from './Items';
 import Deliveries from './Deliveries';
 import Billing from './Billing';
 import SettingsPage from './SettingsPage';
+import InventoryManagement from './InventoryManagement';
+import WorkflowBoard from './WorkflowBoard';
 
-export default function TailoringDashboard() {
+export default function BusinessDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState('dashboard');
+  const [hasOrders, setHasOrders] = useState(false); // Toggle this to show different states
+  const [dashboardTab, setDashboardTab] = useState('Dashboard');
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'agencies', label: 'Agencies', icon: Users },
+    { id: 'task', label: 'Tasks', icon: Calendar },
+    { id: 'agencies', label: 'Agencies', icon: MessageSquare },
     { id: 'orders', label: 'Orders', icon: FileText },
     { id: 'vendors', label: 'Vendors', icon: Scissors },
+    { id: 'inventory', label: 'Inventory', icon: Package },
     { id: 'items', label: 'Items', icon: Package },
+    { id: 'workflows', label: 'Workflows', icon: Workflow },
     { id: 'deliveries', label: 'Deliveries', icon: Truck },
-    { id: 'billing', label: 'Billing', icon: TrendingUp },
+    { id: 'billing', label: 'Billing', icon: CreditCard },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
-  const statsData = [
-    { title: 'Active Orders', value: '47', color: 'from-blue-400 to-blue-600', icon: Shirt, trend: '+12%' },
-    { title: 'Customers', value: '156', color: 'from-green-400 to-green-600', icon: Users, trend: '+8%' },
-    { title: 'Tailors', value: '12', color: 'from-purple-400 to-purple-600', icon: Scissors, trend: '+2' },
-    { title: 'Pending Deliveries', value: '23', color: 'from-orange-400 to-orange-600', icon: Truck, trend: '-5' },
-    { title: 'Revenue (₹)', value: '₹1,24,500', color: 'from-cyan-400 to-cyan-600', icon: DollarSign, trend: '+15%' },
-    { title: 'Completed Orders', value: '89', color: 'from-pink-400 to-pink-600', icon: CheckCircle, trend: '+18%' },
-  ];
-
-  const recentOrders = [
-    { 
-      id: 'ORD-001', 
-      customer: 'Rajesh Kumar', 
-      item: 'Wedding Suit', 
-      status: 'Cutting', 
-      delivery: '2025-07-15', 
-      amount: '₹8,500',
-      priority: 'High'
+  // Today's metrics (top row)
+  const todayMetrics = [
+    {
+      title: 'Orders today',
+      value: 0,
+      subValue: '0 ₹',
+      icon: FileText,
+      color: 'bg-slate-100 hover:bg-slate-200 border-slate-200',
+      iconColor: 'text-slate-600'
     },
-    { 
-      id: 'ORD-002', 
-      customer: 'Priya Sharma', 
-      item: 'Saree Blouse', 
-      status: 'Stitching', 
-      delivery: '2025-07-12', 
-      amount: '₹2,200',
-      priority: 'Medium'
+    {
+      title: 'Sales today',
+      value: 0,
+      subValue: '0 ₹',
+      icon: ShoppingCart,
+      color: 'bg-slate-100 hover:bg-slate-200 border-slate-200',
+      iconColor: 'text-slate-600'
     },
-    { 
-      id: 'ORD-003', 
-      customer: 'Amit Patel', 
-      item: 'Formal Shirt', 
-      status: 'Quality Check', 
-      delivery: '2025-07-10', 
-      amount: '₹1,800',
-      priority: 'Low'
+    {
+      title: 'Revenue today',
+      value: '0 ₹',
+      subValue: '0 ₹',
+      icon: DollarSign,
+      color: 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200',
+      iconColor: 'text-emerald-600'
     },
-    { 
-      id: 'ORD-004', 
-      customer: 'Sneha Joshi', 
-      item: 'Lehenga', 
-      status: 'Ready', 
-      delivery: '2025-07-09', 
-      amount: '₹15,000',
-      priority: 'High'
+    {
+      title: 'Client refunds today',
+      value: '0 ₹',
+      subValue: '0 ₹',
+      icon: ArrowDownRight,
+      color: 'bg-red-50 hover:bg-red-100 border-red-200',
+      iconColor: 'text-red-600'
     },
   ];
 
-  const topTailors = [
-    { name: 'Ramesh Mistri', orders: 15, rating: 4.9, specialty: 'Suits' },
-    { name: 'Sunita Devi', orders: 12, rating: 4.8, specialty: 'Blouses' },
-    { name: 'Mohan Lal', orders: 10, rating: 4.7, specialty: 'Kurtas' },
-    { name: 'Kavita Sharma', orders: 8, rating: 4.6, specialty: 'Sarees' },
+  // Status metrics (middle row)
+  const statusMetrics = [
+    {
+      title: 'New',
+      value: 0,
+      percentage: '0%',
+      icon: PlusCircle,
+      color: 'bg-blue-50 hover:bg-blue-100 border-blue-200',
+      iconColor: 'text-blue-600',
+      badge: 'NEW'
+    },
+    {
+      title: 'Urgent',
+      value: 0,
+      percentage: '0%',
+      icon: Flame,
+      color: 'bg-red-50 hover:bg-red-100 border-red-200',
+      iconColor: 'text-red-600'
+    },
+    {
+      title: 'Overdue',
+      value: 0,
+      percentage: '0%',
+      icon: Timer,
+      color: 'bg-amber-50 hover:bg-amber-100 border-amber-200',
+      iconColor: 'text-amber-600'
+    },
+    {
+      title: 'Receivables',
+      value: 0,
+      subValue: '0 ₹',
+      icon: Wallet,
+      color: 'bg-slate-100 hover:bg-slate-200 border-slate-200',
+      iconColor: 'text-slate-600'
+    },
+    {
+      title: 'Total money in accounts',
+      value: '0 ₹',
+      subValue: 'Cash: 0 | Cashless: 0',
+      icon: IndianRupee,
+      color: 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200',
+      iconColor: 'text-emerald-600'
+    },
   ];
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Cutting': return 'bg-yellow-100 text-yellow-800';
-      case 'Stitching': return 'bg-blue-100 text-blue-800';
-      case 'Quality Check': return 'bg-purple-100 text-purple-800';
-      case 'Ready': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+  // Bottom metrics (monthly stats)
+  const monthlyMetrics = [
+    {
+      title: 'Orders created',
+      value: 0,
+      badge: '0',
+      icon: FileText,
+      color: 'bg-blue-50 hover:bg-blue-100 border-blue-200',
+      iconColor: 'text-blue-600'
+    },
+    {
+      title: 'Orders won',
+      value: 0,
+      subValue: '0 ₹',
+      icon: ThumbsUp,
+      color: 'bg-green-50 hover:bg-green-100 border-green-200',
+      iconColor: 'text-green-600'
+    },
+    {
+      title: 'Revenue this month',
+      value: '0 ₹',
+      subValue: '0 ₹',
+      icon: TrendingUp,
+      color: 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200',
+      iconColor: 'text-emerald-600'
+    },
+    {
+      title: 'Client refunds this month',
+      value: '0 ₹',
+      subValue: '0 ₹',
+      icon: ArrowDownRight,
+      color: 'bg-red-50 hover:bg-red-100 border-red-200',
+      iconColor: 'text-red-600'
+    },
+  ];
+
+  // Additional metrics (bottom row)
+  const additionalMetrics = [
+    {
+      title: 'Conversion',
+      value: '0%',
+      badge: '0%',
+      icon: Percent,
+      color: 'bg-blue-50 hover:bg-blue-100 border-blue-200',
+      iconColor: 'text-blue-600'
+    },
+    {
+      title: 'Company rating',
+      value: 0,
+      icon: Star,
+      color: 'bg-yellow-50 hover:bg-yellow-100 border-yellow-200',
+      iconColor: 'text-yellow-600',
+      badge: '0'
+    },
+    {
+      title: 'Average Order value',
+      value: '0 ₹',
+      subValue: '0 ₹',
+      icon: BarChart3,
+      color: 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200',
+      iconColor: 'text-emerald-600'
+    },
+    {
+      title: 'Average Sale value',
+      value: '0 ₹',
+      subValue: '0 ₹',
+      icon: Target,
+      color: 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200',
+      iconColor: 'text-emerald-600'
+    },
+  ];
+
+  const MetricCard = ({ metric, size = 'normal' }) => {
+    const Icon = metric.icon;
+    return (
+      <div className={`${metric.color} border-2 rounded-2xl p-6 transition-all duration-200 cursor-pointer group ${size === 'large' ? 'col-span-2' : ''
+        }`}>
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <Icon className={`w-5 h-5 ${metric.iconColor}`} />
+              <h3 className="text-sm font-medium text-gray-700">{metric.title}</h3>
+              {metric.beta && (
+                <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full font-medium">
+                  BETA
+                </span>
+              )}
+            </div>
+            <div className="space-y-2">
+              <div className="text-3xl font-bold text-gray-900">{metric.value}</div>
+              {metric.subValue && (
+                <div className="flex items-center gap-2">
+                  <span className="bg-gray-500 text-white text-xs px-2 py-1 rounded font-medium">
+                    {metric.subValue}
+                  </span>
+                </div>
+              )}
+              {metric.percentage && (
+                <div className="flex items-center gap-2">
+                  <span className="bg-gray-500 text-white text-xs px-2 py-1 rounded font-medium">
+                    {metric.percentage}
+                  </span>
+                </div>
+              )}
+              {metric.badge && (
+                <div className="flex items-center gap-2">
+                  <span className="bg-gray-500 text-white text-xs px-2 py-1 rounded font-medium">
+                    {metric.badge}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const EmptyState = () => (
+    <div className="flex flex-col items-center justify-center py-20 px-4">
+      <div className="text-center max-w-md">
+        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <FileText className="w-8 h-8 text-gray-400" />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">No orders yet</h3>
+        <p className="text-gray-500 text-sm leading-relaxed">
+          Create orders and receive payments for them to see their dynamics here
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderDashboardContent = () => {
+    switch (dashboardTab) {
+      case 'Dashboard':
+        return (
+          <div className="space-y-6">
+            {!hasOrders ? (
+              <>
+                {/* Today's Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                  {todayMetrics.map((metric, index) => (
+                    <MetricCard key={index} metric={metric} />
+                  ))}
+                </div>
+
+                {/* Status Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                  {statusMetrics.map((metric, index) => (
+                    <MetricCard key={index} metric={metric} />
+                  ))}
+                </div>
+
+                {/* Empty State */}
+                <EmptyState />
+
+                {/* Monthly Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {monthlyMetrics.map((metric, index) => (
+                    <MetricCard key={index} metric={metric} />
+                  ))}
+                </div>
+
+                {/* Additional Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {additionalMetrics.map((metric, index) => (
+                    <MetricCard key={index} metric={metric} />
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-20">
+                <p className="text-gray-500">Orders view would appear here when hasOrders is true</p>
+              </div>
+            )}
+
+            {/* Bottom sections placeholders */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Orders in progress</h3>
+                <div className="text-center py-8">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Activity className="w-6 h-6 text-gray-400" />
+                  </div>
+                  <p className="text-gray-500 text-sm">No orders in progress</p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Orders by assigned technicians</h3>
+                <div className="text-center py-8">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-6 h-6 text-gray-400" />
+                  </div>
+                  <p className="text-gray-500 text-sm">No assigned technicians</p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Dropped off orders</h3>
+                <div className="text-center py-8">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Package className="w-6 h-6 text-gray-400" />
+                  </div>
+                  <p className="text-gray-500 text-sm">No dropped off orders</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'Employee hours':
+        return <EmployeeHoursPage />;
+      case 'Services':
+        return <ServicesPage />;
+      case 'Products':
+        return <ProductPage />;
+      case 'Bundles':
+        return <BundlePage />;
+      default:
+        return null;
     }
-  };
-
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'High': return 'bg-red-100 text-red-800';
-      case 'Medium': return 'bg-yellow-100 text-yellow-800';
-      case 'Low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const handleViewAllOrders = () => {
-    setCurrentPage('orders');
-    setSidebarOpen(false);
-  };
-
-  const handleViewAllTailors = () => {
-    setCurrentPage('vendors');
-    setSidebarOpen(false);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 h-full w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0`}>
-        
+      <div className={`fixed left-0 top-0 h-full w-64 bg-gray-800 shadow-xl transform transition-transform duration-300 ease-in-out z-50 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0`}>
+
         {/* Logo */}
-        <div className="flex items-center justify-between p-4 lg:p-6 border-b">
+        <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <div className="flex items-center">
-            <Scissors className="w-6 h-6 lg:w-8 lg:h-8 text-blue-600 mr-2" />
-            <h1 className="text-lg lg:text-xl font-bold text-gray-800">TailorPro</h1>
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
+              <span className="text-white text-lg font-bold">M</span>
+            </div>
+            <h1 className="text-xl font-bold text-white">My company</h1>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-gray-500 hover:text-gray-700"
+            className="lg:hidden text-gray-400 hover:text-white"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav className="mt-4 lg:mt-6">
+        {/* Welcome */}
+        <div className="p-6 border-b border-gray-700">
+          <div className="flex items-center text-amber-400 mb-2">
+            <span className="text-lg">👋</span>
+            <span className="ml-2 text-white font-medium">Welcome</span>
+          </div>
+        </div>
+
+        {/* Navigation - Added max-height and overflow-y-auto */}
+        <nav className="mt-4 flex-1 overflow-y-auto max-h-[calc(100vh-260px)] dark-scrollbar pr-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -179,36 +438,34 @@ export default function TailoringDashboard() {
                 onClick={() => {
                   setCurrentPage(item.id);
                   setSidebarOpen(false);
+                  // Reset dashboard tab when switching to dashboard
+                  if (item.id === 'dashboard') {
+                    setDashboardTab('Dashboard');
+                  }
                 }}
-                className={`w-full flex items-center px-4 lg:px-6 py-3 text-left transition-colors ${
-                  currentPage === item.id
-                    ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
-                }`}
+                className={`w-full flex items-center px-6 py-3 text-left transition-colors ${currentPage === item.id
+                    ? 'bg-gray-700 text-white border-r-2 border-blue-500'
+                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  }`}
               >
                 <Icon className="w-5 h-5 mr-3" />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {item.beta && (
+                  <span className="bg-purple-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                    BETA
+                  </span>
+                )}
               </button>
             );
           })}
         </nav>
-
-        {/* Logout */}
-        <div className="absolute bottom-0 w-full p-4 lg:p-6 border-t">
-        <Link href="/admin">
-          <button className="w-full flex items-center px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-            <LogOut className="w-5 h-5 mr-3" />
-            Logout
-          </button>
-        </Link>
-        </div>
       </div>
 
       {/* Main Content */}
       <div className="lg:ml-64">
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
-          <div className="flex items-center justify-between px-4 lg:px-6 py-3 lg:py-4">
+          <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center">
               <button
                 onClick={() => setSidebarOpen(true)}
@@ -216,213 +473,58 @@ export default function TailoringDashboard() {
               >
                 <Menu className="w-6 h-6" />
               </button>
-              <h2 className="text-lg lg:text-xl font-semibold text-gray-800 capitalize">
-                {currentPage === 'dashboard' ? 'Dashboard' : currentPage}
-              </h2>
+              <h2 className="text-2xl font-bold text-gray-800">My company</h2>
             </div>
-            
-            <div className="flex items-center space-x-2 lg:space-x-4">
-              {/* Notifications */}
-              <button className="relative p-2 text-gray-600 hover:text-gray-800">
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  7
-                </span>
+
+            <div className="flex items-center space-x-4">
+              <button className="text-gray-600 hover:text-gray-800">
+                <HelpCircle className="w-5 h-5" />
+                <span className="ml-2 text-sm">Help</span>
               </button>
-              
-              {/* User Profile */}
-              <div className="flex items-center space-x-2 lg:space-x-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">A</span>
-                </div>
-                <div className="hidden sm:block">
-                  <p className="text-sm font-medium text-gray-800">Shop Owner</p>
-                  <p className="text-xs text-gray-500">admin@tailorpro.com</p>
-                </div>
-              </div>
             </div>
           </div>
         </header>
 
         {/* Dashboard Content */}
-        <main className="p-3 lg:p-6">
+        <main className="p-6">
           {currentPage === 'dashboard' && (
-            <div className="space-y-4 lg:space-y-6">
-              {/* Welcome Message */}
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-4 lg:p-6 text-white">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                  <div className="mb-4 lg:mb-0">
-                    <h3 className="text-lg font-semibold mb-2">Welcome to TailorPro</h3>
-                    <p className="text-blue-100 text-sm lg:text-base">Today: Monday, July 07, 2025</p>
-                    <p className="text-blue-100 text-sm lg:text-base">Urgent deliveries: 3 orders due today</p>
-                  </div>
-                  <button className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors">
-                    <PlusCircle className="w-4 h-4" />
-                    <span>New Order</span>
+            <div className="space-y-6">
+              {/* Navigation Tabs */}
+              <div className="flex space-x-8 border-b border-gray-200">
+                {['Dashboard', 'Employee hours', 'Services', 'Products', 'Bundles'].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setDashboardTab(tab)}
+                    className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${dashboardTab === tab
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                  >
+                    {tab}
                   </button>
-                </div>
+                ))}
               </div>
 
-              {/* Stats Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-                {statsData.map((stat, index) => {
-                  const Icon = stat.icon;
-                  return (
-                    <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
-                          <p className="text-2xl lg:text-3xl font-bold text-gray-900">{stat.value}</p>
-                          <p className="text-sm text-green-600 mt-1">{stat.trend}</p>
-                        </div>
-                        <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-gradient-to-r ${stat.color} flex items-center justify-center ml-4`}>
-                          <Icon className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Recent Orders and Top Tailors */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
-                {/* Recent Orders */}
-                <div className="xl:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
-                  <div className="p-4 lg:p-6 border-b border-gray-200 flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-800">Recent Orders</h3>
-                    <button 
-                      onClick={handleViewAllOrders}
-                      className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
-                    >
-                      View All
-                    </button>
-                  </div>
-                  
-                  {/* Mobile Card View */}
-                  <div className="block lg:hidden">
-                    {recentOrders.map((order, index) => (
-                      <div key={index} className="p-4 border-b border-gray-100 last:border-b-0">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-blue-600">{order.id}</span>
-                          <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(order.status)}`}>
-                            {order.status}
-                          </span>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium text-gray-900">{order.customer}</p>
-                          <p className="text-sm text-gray-600">{order.item}</p>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-500">{order.delivery}</span>
-                            <span className="text-sm font-medium text-gray-900">{order.amount}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Desktop Table View */}
-                  <div className="hidden lg:block overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Order ID
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Customer
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Item
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Delivery
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Amount
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {recentOrders.map((order, index) => (
-                          <tr key={index} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                              {order.id}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {order.customer}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {order.item}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(order.status)}`}>
-                                {order.status}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {order.delivery}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              {order.amount}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Top Tailors */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                  <div className="p-4 lg:p-6 border-b border-gray-200 flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-800">Top Tailors</h3>
-                    <button 
-                      onClick={handleViewAllTailors}
-                      className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
-                    >
-                      View All
-                    </button>
-                  </div>
-                  <div className="p-4 lg:p-6 space-y-3 lg:space-y-4">
-                    {topTailors.map((tailor, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-sm font-medium">
-                              {tailor.name.split(' ').map(n => n[0]).join('')}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">{tailor.name}</p>
-                            <p className="text-xs text-gray-500">{tailor.specialty}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium text-gray-900">{tailor.orders} orders</p>
-                          <div className="flex items-center space-x-1">
-                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                            <span className="text-xs text-gray-600">{tailor.rating}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              {/* Render content based on active tab */}
+              {renderDashboardContent()}
             </div>
           )}
 
           {/* Other Pages */}
-          {currentPage === 'orders' && <Orders />}
-          {currentPage === 'agencies' && <Agencies />}
-          {currentPage === 'vendors' && <Vendors />}
-          {currentPage === 'items' && <Items />}
-          {currentPage === 'deliveries' && <Deliveries />}
-          {currentPage === 'billing' && <Billing />}
-          {currentPage === 'settings' && <SettingsPage />}
+          {currentPage !== 'dashboard' && (
+            <>
+              {currentPage === 'orders' && <Orders />}
+              {currentPage === 'task' && <TasksPage />}
+              {currentPage === 'agencies' && <Agencies />}
+              {currentPage === 'vendors' && <Vendors />}
+              {currentPage === 'inventory' && <InventoryManagement />}
+              {currentPage === 'items' && <Items />}
+              {currentPage === 'deliveries' && <Deliveries />}
+              {currentPage === 'billing' && <Billing />}
+              {currentPage === 'workflows' && <WorkflowBoard />}
+              {currentPage === 'settings' && <SettingsPage />}
+            </>
+          )}
         </main>
       </div>
     </div>
