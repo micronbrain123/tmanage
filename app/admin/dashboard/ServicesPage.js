@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
-import { Plus, Download, Upload, Search } from 'lucide-react';
+import React, { useState, Suspense } from 'react';
+import { Plus, Download, Upload, ChevronDown, ChevronRight } from 'lucide-react';
+
+// Lazy-loaded modals
+const CategoryModal = React.lazy(() => import('./CategoryModal'));
+const ServiceModal = React.lazy(() => import('./ServiceModal'));
 
 const ServicesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedServices, setSelectedServices] = useState([]);
+  const [expandedCategories, setExpandedCategories] = useState({ 'All labors and services': true });
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
   const [services, setServices] = useState([
     { id: 1, name: 'Bridal. Adjust Straps', category: 'Bridal', warranty: 'No warranty', selected: false },
     { id: 2, name: 'Bridal. Basic Hem', category: 'Bridal', warranty: 'No warranty', selected: false },
@@ -12,18 +19,10 @@ const ServicesPage = () => {
     { id: 5, name: 'Bridal. Groomsmen Packages', category: 'Bridal', warranty: 'No warranty', selected: false },
     { id: 6, name: 'Bridal. Install Bra Cups', category: 'Bridal', warranty: 'No warranty', selected: false },
     { id: 7, name: 'Bridal. Intricate Bridal', category: 'Bridal', warranty: 'No warranty', selected: false },
-    { id: 8, name: 'Bridal. Take In / Let Out', category: 'Bridal', warranty: 'No warranty', selected: false },
-    { id: 9, name: 'Consultation', category: 'General', warranty: 'No warranty', selected: false },
-    { id: 10, name: 'Courier Service', category: 'General', warranty: 'No warranty', selected: false },
-    { id: 11, name: 'Denim. Original Hem', category: 'Denim', warranty: 'No warranty', selected: false },
-    // Add more services as needed
   ]);
 
   const categories = [
-    { name: 'All labors and services', count: services.length },
-    { name: 'Bridal', count: services.filter(s => s.category === 'Bridal').length },
-    { name: 'General', count: services.filter(s => s.category === 'General').length },
-    { name: 'Denim', count: services.filter(s => s.category === 'Denim').length },
+    { name: 'All labors and services', count: services.length, expandable: true },
   ];
 
   const [selectedCategory, setSelectedCategory] = useState('All labors and services');
@@ -33,9 +32,16 @@ const ServicesPage = () => {
   };
 
   const handleSelectService = (id, checked) => {
-    setServices(services.map(service => 
+    setServices(services.map(service =>
       service.id === id ? { ...service, selected: checked } : service
     ));
+  };
+
+  const toggleCategory = (categoryName) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [categoryName]: !prev[categoryName]
+    }));
   };
 
   const filteredServices = services.filter(service => {
@@ -45,89 +51,148 @@ const ServicesPage = () => {
   });
 
   const selectedCount = services.filter(s => s.selected).length;
+  const totalPages = Math.ceil(filteredServices.length / 10);
+
+  const openModal = (type) => {
+    if (type === 'category') {
+      setShowCategoryModal(true);
+    } else {
+      setShowServiceModal(true);
+    }
+  };
+
+  const closeModal = () => {
+    setShowCategoryModal(false);
+    setShowServiceModal(false);
+  };
+
+  const handleCreateCategory = (categoryData) => {
+    console.log('Creating category:', categoryData);
+    closeModal();
+  };
+
+  const handleCreateService = (serviceData) => {
+    console.log('Creating service:', serviceData);
+    closeModal();
+  };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <button className="bg-green-500 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-green-600">
-              <Plus className="w-4 h-4" />
-              Service
-            </button>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search"
-                className="border rounded-md pl-10 pr-4 py-2 w-64"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-            </div>
-            <button className="border px-4 py-2 rounded-md flex items-center gap-2 hover:bg-gray-50">
-              <Download className="w-4 h-4" />
-              Export
-            </button>
-            <button className="border px-4 py-2 rounded-md flex items-center gap-2 hover:bg-gray-50">
-              <Upload className="w-4 h-4" />
-              Import
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="bg-gray-50 min-h-screen relative">
+      {/* Modals */}
+      {showCategoryModal && (
+        <Suspense fallback={<div className="fixed inset-0 bg-white flex items-center justify-center">Loading category modal...</div>}>
+          <CategoryModal 
+            onClose={closeModal} 
+            onCreate={handleCreateCategory} 
+          />
+        </Suspense>
+      )}
 
-      <div className="flex">
+      {showServiceModal && (
+        <Suspense fallback={<div className="fixed inset-0 bg-white flex items-center justify-center">Loading service modal...</div>}>
+          <ServiceModal 
+            onClose={closeModal} 
+            onCreate={handleCreateService} 
+          />
+        </Suspense>
+      )}
+
+      {/* Main Content */}
+      <div className="flex flex-col lg:flex-row pt-2 gap-4 lg:gap-6 px-2 sm:px-4 lg:px-0">
         {/* Sidebar */}
-        <div className="w-64 bg-white border-r p-4">
-          <div className="space-y-2">
+        <div className="w-full lg:w-64 bg-white lg:bg-transparent rounded-lg shadow-sm lg:shadow-none p-3 lg:p-2">
+          {/* Mobile: Horizontal buttons, Desktop: Vertical buttons */}
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => openModal('category')}
+              className="bg-green-500 text-white px-3 py-2 rounded text-sm flex items-center gap-1 hover:bg-green-600 flex-1 lg:flex-none justify-center lg:justify-start"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Category</span>
+            </button>
+            <button
+              onClick={() => openModal('service')}
+              className="bg-green-500 text-white px-3 py-2 rounded text-sm flex items-center gap-1 hover:bg-green-600 flex-1 lg:flex-none justify-center lg:justify-start"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Service</span>
+            </button>
+          </div>
+
+          <div className="space-y-1">
             <div className="text-sm font-medium text-gray-700 mb-3">Category</div>
             {categories.map((category, index) => (
-              <div 
-                key={index} 
-                className={`flex items-center justify-between py-2 cursor-pointer ${selectedCategory === category.name ? 'text-blue-600' : 'text-gray-700'}`}
-                onClick={() => setSelectedCategory(category.name)}
-              >
-                <div className="flex items-center gap-2">
-                  {index === 0 && <span className="text-gray-400">▼</span>}
-                  <span className="text-sm">{category.name}</span>
+              <div key={index} className="space-y-1">
+                <div
+                  className={`flex items-center justify-between py-2 px-2 cursor-pointer hover:bg-gray-50 rounded ${selectedCategory === category.name ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}`}
+                  onClick={() => setSelectedCategory(category.name)}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    {category.expandable && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleCategory(category.name);
+                        }}
+                        className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+                      >
+                        {expandedCategories[category.name] ?
+                          <ChevronDown className="w-4 h-4" /> :
+                          <ChevronRight className="w-4 h-4" />
+                        }
+                      </button>
+                    )}
+                    <span className="text-sm truncate">{category.name}</span>
+                  </div>
+                  <span className="text-sm text-gray-500 flex-shrink-0 ml-2">{category.count}</span>
                 </div>
-                <span className="text-sm text-gray-500">{category.count}</span>
               </div>
             ))}
-            <div className="pt-4 border-t">
+
+            <div className="pt-4 border-t mt-4">
               <div className="text-sm text-gray-600">Total — {services.length}</div>
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-6">
-          {/* Services List */}
-          <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+        <div className="flex-1 min-w-0 px-2 sm:px-0">
+          {/* Action Buttons */}
+          <div className="flex flex-wrap justify-end gap-2 mb-4">
+            <button className="border border-gray-300 px-3 sm:px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50">
+              <Download className="w-4 h-4" />
+              <span className="hidden sm:inline">Import</span>
+            </button>
+            <button className="border border-gray-300 px-3 sm:px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50">
+              <Upload className="w-4 h-4" />
+              <span className="hidden sm:inline">Export</span>
+            </button>
+          </div>
+
+          {/* Services Table */}
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="px-6 py-3 text-left">
+                    <th className="px-2 sm:px-4 py-3 text-left w-8 sm:w-12">
                       <input
                         type="checkbox"
-                        checked={selectedCount === services.length}
+                        checked={selectedCount === services.length && services.length > 0}
                         onChange={(e) => handleSelectAll(e.target.checked)}
                         className="rounded border-gray-300"
                       />
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium text-gray-700 min-w-[100px] sm:min-w-0">
                       Category
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium text-gray-700 min-w-[80px] sm:min-w-0">
+                      Quantity
+                    </th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium text-gray-700 min-w-[120px] sm:min-w-0">
+                      Name
+                    </th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium text-gray-700 min-w-[100px] sm:min-w-0">
                       Warranty
                     </th>
                   </tr>
@@ -135,7 +200,7 @@ const ServicesPage = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredServices.map((service) => (
                     <tr key={service.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
                         <input
                           type="checkbox"
                           checked={service.selected}
@@ -143,25 +208,53 @@ const ServicesPage = () => {
                           className="rounded border-gray-300"
                         />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {service.name}
+                      <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-900">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
+                            <span className="text-xs">🏷️</span>
+                          </div>
+                          <span className="truncate">{service.category}</span>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {service.category}
+                      <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-900">
+                        -
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {service.warranty}
+                      <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-900">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
+                            <span className="text-xs">🏷️</span>
+                          </div>
+                          <span className="truncate">{service.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-900">
+                        <span className="truncate">{service.warranty}</span>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            
-            <div className="px-6 py-4 bg-gray-50 border-t">
-              <div className="text-sm text-gray-600">
-                Total — {filteredServices.length}
-              </div>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
+            <div className="flex items-center gap-2">
+              <button className="p-2 border rounded hover:bg-gray-50">
+                ‹
+              </button>
+              <button className="px-3 py-1 bg-blue-500 text-white rounded">
+                1
+              </button>
+              <button className="px-3 py-1 border rounded hover:bg-gray-50">
+                2
+              </button>
+              <button className="p-2 border rounded hover:bg-gray-50">
+                ›
+              </button>
+            </div>
+            <div className="text-sm text-gray-600">
+              Total — {filteredServices.length}
             </div>
           </div>
         </div>

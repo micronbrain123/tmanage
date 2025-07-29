@@ -131,9 +131,9 @@ export default function InventoryManagement() {
   ];
 
   const renderStockContent = () => (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Controls */}
-      <div className="flex flex-wrap gap-4 items-center">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-start sm:items-center">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-700">Warehouse</span>
           <div className="flex items-center gap-1 text-gray-500">
@@ -141,11 +141,11 @@ export default function InventoryManagement() {
           </div>
         </div>
         
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
           <select 
             value={selectedWarehouse}
             onChange={(e) => setSelectedWarehouse(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
           >
             <option value="products-warehouse">Products warehouse</option>
             <option value="materials-warehouse">Materials warehouse</option>
@@ -154,7 +154,7 @@ export default function InventoryManagement() {
           <select 
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
           >
             <option value="all-products">All products</option>
             <option value="fabrics">Fabrics</option>
@@ -164,7 +164,7 @@ export default function InventoryManagement() {
           <select 
             value={selectedFilter}
             onChange={(e) => setSelectedFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
           >
             <option value="not-specified">- Not specified -</option>
             <option value="low-stock">Low stock</option>
@@ -172,14 +172,16 @@ export default function InventoryManagement() {
           </select>
         </div>
         
-        <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-          <Download className="w-4 h-4" />
-          <span className="text-sm">Export</span>
-        </button>
-        
-        <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <Settings className="w-4 h-4 text-gray-600" />
-        </button>
+        <div className="flex gap-2 w-full sm:w-auto justify-end">
+          <button className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+            <Download className="w-4 h-4" />
+            <span className="hidden sm:inline">Export</span>
+          </button>
+          
+          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <Settings className="w-4 h-4 text-gray-600" />
+          </button>
+        </div>
       </div>
 
       {/* Table */}
@@ -188,71 +190,82 @@ export default function InventoryManagement() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="text-left p-4 font-medium text-gray-700">
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700">
                   <div className="flex items-center gap-2">
                     <input type="checkbox" className="rounded border-gray-300" />
                   </div>
                 </th>
-                <th className="text-left p-4 font-medium text-gray-700">
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[60px] sm:min-w-0">
                   <div className="flex items-center gap-2">
                     SKU
-                    <ArrowUpDown className="w-4 h-4 text-gray-400" />
+                    <ArrowUpDown className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />
                   </div>
                 </th>
-                <th className="text-left p-4 font-medium text-gray-700">Image</th>
-                <th className="text-left p-4 font-medium text-gray-700">
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700">Image</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[100px] sm:min-w-0">
                   <div className="flex items-center gap-2">
                     Name
-                    <ArrowUpDown className="w-4 h-4 text-gray-400" />
+                    <ArrowUpDown className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />
                   </div>
                 </th>
-                <th className="text-left p-4 font-medium text-gray-700">
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[70px] sm:min-w-0">
                   <div className="flex items-center gap-2">
-                    In stock
-                    <ArrowUpDown className="w-4 h-4 text-gray-400" />
+                    <span className="hidden sm:inline">In stock</span>
+                    <span className="sm:hidden">Stock</span>
+                    <ArrowUpDown className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />
                   </div>
                 </th>
-                <th className="text-left p-4 font-medium text-gray-700">
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[60px] sm:min-w-0">
                   <div className="flex items-center gap-2">
-                    Min. stock
-                    <ArrowUpDown className="w-4 h-4 text-gray-400" />
+                    <span className="hidden sm:inline">Min. stock</span>
+                    <span className="sm:hidden">Min</span>
+                    <ArrowUpDown className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />
                   </div>
                 </th>
-                <th className="text-left p-4 font-medium text-gray-700">
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[80px] sm:min-w-0">
                   <div className="flex items-center gap-2">
                     Prices, ₹
-                    <ArrowUpDown className="w-4 h-4 text-gray-400" />
+                    <ArrowUpDown className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />
                   </div>
                 </th>
-                <th className="text-left p-4 font-medium text-gray-700">Warranty</th>
-                <th className="text-left p-4 font-medium text-gray-700">Expiration pe...</th>
-                <th className="text-left p-4 font-medium text-gray-700"></th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[70px] sm:min-w-0">Warranty</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[80px] sm:min-w-0">
+                  <span className="hidden sm:inline">Expiration pe...</span>
+                  <span className="sm:hidden">Exp.</span>
+                </th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700"></th>
               </tr>
             </thead>
             <tbody>
               {stockData.map((item) => (
                 <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="p-4">
+                  <td className="p-2 sm:p-4">
                     <input type="checkbox" className="rounded border-gray-300" />
                   </td>
-                  <td className="p-4 text-sm text-gray-900">{item.sku}</td>
-                  <td className="p-4">
-                    <div className={`w-10 h-10 rounded ${item.imageColor}`}></div>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{item.sku}</td>
+                  <td className="p-2 sm:p-4">
+                    <div className={`w-8 sm:w-10 h-8 sm:h-10 rounded ${item.imageColor}`}></div>
                   </td>
-                  <td className="p-4 text-sm text-gray-900">{item.name}</td>
-                  <td className="p-4 text-sm text-gray-900">{item.inStock}</td>
-                  <td className="p-4 text-sm text-gray-900">{item.minStock}</td>
-                  <td className="p-4">
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">
+                    <span className="truncate block">{item.name}</span>
+                  </td>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{item.inStock}</td>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{item.minStock}</td>
+                  <td className="p-2 sm:p-4">
                     <div className="space-y-1">
-                      <div className="text-sm text-gray-900">Repair price: {item.repairPrice}</div>
-                      <div className="text-sm text-gray-900">Store price: {item.storePrice}</div>
+                      <div className="text-xs sm:text-sm text-gray-900">
+                        <span className="hidden sm:inline">Repair price: </span>{item.repairPrice}
+                      </div>
+                      <div className="text-xs sm:text-sm text-gray-900">
+                        <span className="hidden sm:inline">Store price: </span>{item.storePrice}
+                      </div>
                     </div>
                   </td>
-                  <td className="p-4 text-sm text-gray-900">{item.warranty}</td>
-                  <td className="p-4 text-sm text-gray-900">{item.expiration}</td>
-                  <td className="p-4">
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{item.warranty}</td>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{item.expiration}</td>
+                  <td className="p-2 sm:p-4">
                     <button className="p-1 hover:bg-gray-200 rounded">
-                      <MoreHorizontal className="w-4 h-4 text-gray-600" />
+                      <MoreHorizontal className="w-3 sm:w-4 h-3 sm:h-4 text-gray-600" />
                     </button>
                   </td>
                 </tr>
@@ -261,20 +274,20 @@ export default function InventoryManagement() {
           </table>
         </div>
         
-        <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
-          <span className="text-sm text-gray-700">Total — {stockData.length}</span>
+        <div className="px-3 sm:px-4 py-3 bg-gray-50 border-t border-gray-200">
+          <span className="text-xs sm:text-sm text-gray-700">Total — {stockData.length}</span>
         </div>
       </div>
     </div>
   );
 
   const renderAssetsContent = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h3 className="text-lg font-semibold text-gray-800">Assets Management</h3>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <Plus className="w-4 h-4" />
-          Add Asset
+        <button className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm self-start sm:self-auto">
+          <Plus className="w-3 sm:w-4 h-3 sm:h-4" />
+          <span className="hidden xs:inline">Add Asset</span>
         </button>
       </div>
       
@@ -283,24 +296,32 @@ export default function InventoryManagement() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="text-left p-4 font-medium text-gray-700">Asset Name</th>
-                <th className="text-left p-4 font-medium text-gray-700">Type</th>
-                <th className="text-left p-4 font-medium text-gray-700">Location</th>
-                <th className="text-left p-4 font-medium text-gray-700">Condition</th>
-                <th className="text-left p-4 font-medium text-gray-700">Last Maintenance</th>
-                <th className="text-left p-4 font-medium text-gray-700">Next Maintenance</th>
-                <th className="text-left p-4 font-medium text-gray-700">Value (₹)</th>
-                <th className="text-left p-4 font-medium text-gray-700">Actions</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[100px] sm:min-w-0">Asset Name</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[60px] sm:min-w-0">Type</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[80px] sm:min-w-0">Location</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[70px] sm:min-w-0">Condition</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[80px] sm:min-w-0">
+                  <span className="hidden sm:inline">Last Maintenance</span>
+                  <span className="sm:hidden">Last</span>
+                </th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[80px] sm:min-w-0">
+                  <span className="hidden sm:inline">Next Maintenance</span>
+                  <span className="sm:hidden">Next</span>
+                </th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[70px] sm:min-w-0">Value (₹)</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[70px] sm:min-w-0">Actions</th>
               </tr>
             </thead>
             <tbody>
               {assetsData.map((asset) => (
                 <tr key={asset.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="p-4 text-sm text-gray-900">{asset.name}</td>
-                  <td className="p-4 text-sm text-gray-900">{asset.type}</td>
-                  <td className="p-4 text-sm text-gray-900">{asset.location}</td>
-                  <td className="p-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">
+                    <span className="truncate block">{asset.name}</span>
+                  </td>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{asset.type}</td>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{asset.location}</td>
+                  <td className="p-2 sm:p-4">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                       asset.condition === 'Good' 
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-blue-100 text-blue-800'
@@ -308,16 +329,16 @@ export default function InventoryManagement() {
                       {asset.condition}
                     </span>
                   </td>
-                  <td className="p-4 text-sm text-gray-900">{asset.lastMaintenance}</td>
-                  <td className="p-4 text-sm text-gray-900">{asset.nextMaintenance}</td>
-                  <td className="p-4 text-sm text-gray-900">{asset.value.toLocaleString()}</td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{asset.lastMaintenance}</td>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{asset.nextMaintenance}</td>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{asset.value.toLocaleString()}</td>
+                  <td className="p-2 sm:p-4">
+                    <div className="flex items-center gap-1 sm:gap-2">
                       <button className="p-1 hover:bg-gray-200 rounded">
-                        <Eye className="w-4 h-4 text-gray-600" />
+                        <Eye className="w-3 sm:w-4 h-3 sm:h-4 text-gray-600" />
                       </button>
                       <button className="p-1 hover:bg-gray-200 rounded">
-                        <Edit className="w-4 h-4 text-gray-600" />
+                        <Edit className="w-3 sm:w-4 h-3 sm:h-4 text-gray-600" />
                       </button>
                     </div>
                   </td>
@@ -331,12 +352,12 @@ export default function InventoryManagement() {
   );
 
   const renderPostingsContent = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h3 className="text-lg font-semibold text-gray-800">Inventory Postings</h3>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <Plus className="w-4 h-4" />
-          New Posting
+        <button className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm self-start sm:self-auto">
+          <Plus className="w-3 sm:w-4 h-3 sm:h-4" />
+          <span className="hidden xs:inline">New Posting</span>
         </button>
       </div>
       
@@ -345,22 +366,22 @@ export default function InventoryManagement() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="text-left p-4 font-medium text-gray-700">Date</th>
-                <th className="text-left p-4 font-medium text-gray-700">Type</th>
-                <th className="text-left p-4 font-medium text-gray-700">Item</th>
-                <th className="text-left p-4 font-medium text-gray-700">Quantity</th>
-                <th className="text-left p-4 font-medium text-gray-700">Warehouse</th>
-                <th className="text-left p-4 font-medium text-gray-700">User</th>
-                <th className="text-left p-4 font-medium text-gray-700">Notes</th>
-                <th className="text-left p-4 font-medium text-gray-700">Actions</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[70px] sm:min-w-0">Date</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[60px] sm:min-w-0">Type</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[80px] sm:min-w-0">Item</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[60px] sm:min-w-0">Quantity</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[80px] sm:min-w-0">Warehouse</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[60px] sm:min-w-0">User</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[70px] sm:min-w-0">Notes</th>
+                <th className="text-left p-2 sm:p-4 font-medium text-gray-700 min-w-[60px] sm:min-w-0">Actions</th>
               </tr>
             </thead>
             <tbody>
               {postingsData.map((posting) => (
                 <tr key={posting.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="p-4 text-sm text-gray-900">{posting.date}</td>
-                  <td className="p-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{posting.date}</td>
+                  <td className="p-2 sm:p-4">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                       posting.type === 'Stock In' 
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-red-100 text-red-800'
@@ -368,14 +389,18 @@ export default function InventoryManagement() {
                       {posting.type}
                     </span>
                   </td>
-                  <td className="p-4 text-sm text-gray-900">{posting.item}</td>
-                  <td className="p-4 text-sm text-gray-900">{posting.quantity}</td>
-                  <td className="p-4 text-sm text-gray-900">{posting.warehouse}</td>
-                  <td className="p-4 text-sm text-gray-900">{posting.user}</td>
-                  <td className="p-4 text-sm text-gray-900">{posting.notes}</td>
-                  <td className="p-4">
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">
+                    <span className="truncate block">{posting.item}</span>
+                  </td>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{posting.quantity}</td>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{posting.warehouse}</td>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">{posting.user}</td>
+                  <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-900">
+                    <span className="truncate block">{posting.notes}</span>
+                  </td>
+                  <td className="p-2 sm:p-4">
                     <button className="p-1 hover:bg-gray-200 rounded">
-                      <Eye className="w-4 h-4 text-gray-600" />
+                      <Eye className="w-3 sm:w-4 h-3 sm:h-4 text-gray-600" />
                     </button>
                   </td>
                 </tr>
@@ -388,12 +413,12 @@ export default function InventoryManagement() {
   );
 
   const renderPlaceholderContent = (tabName) => (
-    <div className="bg-white rounded-2xl border-2 border-gray-200 p-12 text-center">
-      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-        <Package className="w-8 h-8 text-gray-400" />
+    <div className="bg-white rounded-2xl border-2 border-gray-200 p-8 sm:p-12 text-center">
+      <div className="w-12 sm:w-16 h-12 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+        <Package className="w-6 sm:w-8 h-6 sm:h-8 text-gray-400" />
       </div>
-      <h3 className="text-xl font-semibold text-gray-800 mb-2 capitalize">{tabName}</h3>
-      <p className="text-gray-500">This section is under development</p>
+      <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 capitalize">{tabName}</h3>
+      <p className="text-gray-500 text-sm sm:text-base">This section is under development</p>
     </div>
   );
 
@@ -411,43 +436,43 @@ export default function InventoryManagement() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">Inventory</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Inventory</h1>
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search className="w-3 sm:w-4 h-3 sm:h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="pl-8 sm:pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-32 sm:w-auto"
             />
           </div>
           <button className="text-gray-600 hover:text-gray-800">
-            <span className="text-sm">Help</span>
+            <span className="text-xs sm:text-sm">Help</span>
           </button>
         </div>
       </div>
 
       {/* Navigation Tabs */}
       <div className="border-b border-gray-200">
-        <nav className="flex space-x-8">
+        <nav className="flex overflow-x-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                className={`flex items-center gap-1 sm:gap-2 py-3 px-2 sm:px-4 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-3 sm:w-4 h-3 sm:h-4" />
                 {tab.label}
               </button>
             );
@@ -456,7 +481,7 @@ export default function InventoryManagement() {
       </div>
 
       {/* Main Content */}
-      <div className="min-h-[600px]">
+      <div className="min-h-[400px] sm:min-h-[600px]">
         {renderContent()}
       </div>
     </div>

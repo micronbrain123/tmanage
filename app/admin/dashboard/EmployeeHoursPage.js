@@ -1,35 +1,65 @@
 import React, { useState } from 'react';
-import { Plus, Download, Upload, Settings, Search } from 'lucide-react';
+import { Plus, Download, Upload, Settings, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const EmployeeHoursPage = () => {
-  const [selectedView, setSelectedView] = useState('month');
+  const [selectedTab, setSelectedTab] = useState('Schedule');
+  const [selectedView, setSelectedView] = useState('Month');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 1)); // July 2025
   const [employees, setEmployees] = useState([
     {
       id: 1,
-      name: 'Micro Brain',
+      name: 'micron brain',
       hours: {
-        '11-07-2025': 8,
-        '12-07-2025': 8,
-        '13-07-2025': 0,
-        '14-07-2025': 6,
-        '15-07-2025': 8,
-        '16-07-2025': 7,
-        '17-07-2025': 0,
+        '2025-07-01': 0,
+        '2025-07-02': 0,
+        '2025-07-03': 0,
+        '2025-07-04': 0,
+        '2025-07-05': 0,
+      },
+      timesheets: {
+        '2025-07-01': { start: '09:00', end: '17:00', break: '1h' },
+        '2025-07-02': { start: '09:00', end: '17:00', break: '1h' },
+        '2025-07-03': { start: '09:00', end: '17:00', break: '1h' },
+        '2025-07-04': { start: '09:00', end: '17:00', break: '1h' },
+        '2025-07-05': { start: '09:00', end: '17:00', break: '1h' },
       },
       selected: false
     },
     // Add more employees as needed
   ]);
 
-  const dates = [
-    '11-07-2025', // Wed
-    '12-07-2025', // Thu
-    '13-07-2025', // Fri
-    '14-07-2025', // Sat
-    '15-07-2025', // Sun
-    '16-07-2025', // Mon
-    '17-07-2025', // Tue
-  ];
+  // Get dates for the current week view
+  const getWeekDates = () => {
+    const startOfWeek = new Date(currentDate);
+    startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1); // Start from Monday
+    
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+      dates.push(date);
+    }
+    return dates;
+  };
+
+  const weekDates = getWeekDates();
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
+  const formatDateKey = (date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+  const getDayName = (date) => {
+    return date.toLocaleDateString('en-US', { weekday: 'short' });
+  };
 
   const handleSelectAll = (checked) => {
     setEmployees(employees.map(employee => ({ ...employee, selected: checked })));
@@ -41,124 +71,210 @@ const EmployeeHoursPage = () => {
     ));
   };
 
+  const navigateWeek = (direction) => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() + (direction * 7));
+    setCurrentDate(newDate);
+  };
+
+  const goToToday = () => {
+    setCurrentDate(new Date());
+  };
+
   const selectedCount = employees.filter(e => e.selected).length;
+
+  // Render different table content based on selected tab
+const renderTableContent = () => {
+    if (selectedTab === 'Schedule') {
+      return (
+        <tbody className="bg-white divide-y divide-gray-200">
+          {employees.map((employee) => (
+            <tr key={employee.id} className="hover:bg-gray-50">
+              <td className="px-2 sm:px-4 py-3 whitespace-nowrap sticky left-0 bg-white z-10 border-r border-gray-200">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0 h-5 w-5 sm:h-6 sm:w-6">
+                    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-purple-600 flex items-center justify-center">
+                      <span className="text-white text-xs font-medium">
+                        {employee.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="ml-1 sm:ml-2 min-w-0">
+                    <div className="text-xs font-medium text-gray-900 truncate">
+                      {employee.name}
+                    </div>
+                  </div>
+                </div>
+              </td>
+              {weekDates.map((date, index) => (
+                <td key={index} className="px-2 sm:px-4 py-3 whitespace-nowrap text-center min-w-[80px] sm:min-w-[112px]">
+                  <div className="text-xs text-gray-900">
+                    {employee.hours[formatDateKey(date)] || 0} h.
+                  </div>
+                  <div className="mt-1">
+                    <div className="w-full bg-gray-200 rounded-full h-1.5">
+                      <div 
+                        className="bg-gray-400 h-1.5 rounded-full" 
+                        style={{ 
+                          width: `${Math.min(((employee.hours[formatDateKey(date)] || 0) / 8) * 100, 100)}%` 
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      );
+    } else {
+      return (
+        <tbody className="bg-white divide-y divide-gray-200">
+          {employees.map((employee) => (
+            <tr key={employee.id} className="hover:bg-gray-50">
+              <td className="px-2 sm:px-4 py-3 whitespace-nowrap sticky left-0 bg-white z-10 border-r border-gray-200">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0 h-5 w-5 sm:h-6 sm:w-6">
+                    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-purple-600 flex items-center justify-center">
+                      <span className="text-white text-xs font-medium">
+                        {employee.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="ml-1 sm:ml-2 min-w-0">
+                    <div className="text-xs font-medium text-gray-900 truncate">
+                      {employee.name}
+                    </div>
+                  </div>
+                </div>
+              </td>
+              {weekDates.map((date, index) => (
+                <td key={index} className="px-2 sm:px-4 py-3 whitespace-nowrap text-center min-w-[100px] sm:min-w-[112px]">
+                  <div className="text-xs text-gray-700">
+                    {employee.timesheets[formatDateKey(date)]?.start || '--'} - {employee.timesheets[formatDateKey(date)]?.end || '--'}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Break: {employee.timesheets[formatDateKey(date)]?.break || '--'}
+                  </div>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      );
+    }
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-semibold">Employee hours</h1>
+      {/* Main Content */}
+      <div className="">
+        {/* Schedule Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <button 
+              className={`px-3 py-2 rounded text-sm ${selectedTab === 'Schedule' ? 'bg-gray-200' : 'bg-gray-100'}`}
+              onClick={() => setSelectedTab('Schedule')}
+            >
+              Schedule
+            </button>
+            <button 
+              className={`px-3 py-2 rounded text-sm ${selectedTab === 'Timesheets' ? 'bg-gray-200' : 'bg-gray-100'}`}
+              onClick={() => setSelectedTab('Timesheets')}
+            >
+              Timesheets
+            </button>
+            <div className="relative">
+              <button 
+                className="px-3 py-2 bg-white border rounded-md text-sm flex items-center gap-2 hover:bg-gray-50"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                {selectedView}
+                <ChevronLeft className={`w-3 h-3 transform transition-transform ${isDropdownOpen ? 'rotate-90' : '-rotate-90'}`} />
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute top-full mt-1 bg-white border rounded-md shadow-lg z-20 min-w-full">
+                  <button 
+                    className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left whitespace-nowrap"
+                    onClick={() => {
+                      setSelectedView('Month');
+                      setIsDropdownOpen(false);
+                    }}
+                  >
+                    Month
+                  </button>
+                  <button 
+                    className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left whitespace-nowrap"
+                    onClick={() => {
+                      setSelectedView('Week');
+                      setIsDropdownOpen(false);
+                    }}
+                  >
+                    Week
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="flex items-center border rounded-md overflow-hidden">
-              <button 
-                className={`px-3 py-2 ${selectedView === 'month' ? 'bg-gray-100' : 'bg-white'}`}
-                onClick={() => setSelectedView('month')}
-              >
-                Month
-              </button>
-              <button 
-                className={`px-3 py-2 ${selectedView === 'week' ? 'bg-gray-100' : 'bg-white'}`}
-                onClick={() => setSelectedView('week')}
-              >
-                Week
-              </button>
-              <button 
-                className={`px-3 py-2 ${selectedView === 'day' ? 'bg-gray-100' : 'bg-white'}`}
-                onClick={() => setSelectedView('day')}
-              >
-                Day
-              </button>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <div className="text-sm font-medium order-1 sm:order-none">
+              {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </div>
-            
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search"
-                className="border rounded-md pl-10 pr-4 py-2 w-64"
-              />
-              <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-            </div>
-            
-            <button className="border px-4 py-2 rounded-md flex items-center gap-2 hover:bg-gray-50">
-              <Download className="w-4 h-4" />
-              Export
-            </button>
-            <button className="border px-4 py-2 rounded-md hover:bg-gray-50">
-              <Settings className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="p-6">
-        {/* Calendar Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <button className="border rounded-md px-3 py-1 hover:bg-gray-50">
+            <button 
+              className="px-3 py-2 border rounded-md hover:bg-gray-50 text-sm"
+              onClick={goToToday}
+            >
               Today
             </button>
-            <div className="text-lg font-medium">July 2025</div>
+            <div className="flex items-center gap-1">
+              <button 
+                className="p-2 hover:bg-gray-100 rounded"
+                onClick={() => navigateWeek(-1)}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button 
+                className="p-2 hover:bg-gray-100 rounded"
+                onClick={() => navigateWeek(1)}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            <button className="p-2 hover:bg-gray-100 rounded">
+              <Search className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        {/* Employee Hours Table */}
+        {/* Employee Schedule Table */}
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-6 py-3 text-left">
-                    <input
-                      type="checkbox"
-                      checked={selectedCount === employees.length}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="rounded border-gray-300"
-                    />
+                  <th className="px-2 sm:px-4 py-3 text-left w-32 sm:w-40 sticky left-0 bg-gray-50 z-20 border-r border-gray-200">
+                    <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Employee
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Employee
-                  </th>
-                  {dates.map((date, index) => (
-                    <th key={index} className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {date.split('-')[0]}
+                  {weekDates.map((date, index) => (
+                    <th key={index} className="px-2 sm:px-4 py-3 text-center min-w-[80px] sm:min-w-[112px]">
+                      <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <div className="hidden sm:block">
+                          {formatDate(date).split(' ')[0]} {formatDate(date).split(' ')[1]} {formatDate(date).split(' ')[2]}, {getDayName(date)}
+                        </div>
+                        <div className="sm:hidden">
+                          <div>{formatDate(date).split(' ')[1]} {formatDate(date).split(' ')[2]}</div>
+                          <div className="text-xs text-gray-400">{getDayName(date).substring(0, 3)}</div>
+                        </div>
+                      </div>
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {employees.map((employee) => (
-                  <tr key={employee.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <input
-                        type="checkbox"
-                        checked={employee.selected}
-                        onChange={(e) => handleSelectEmployee(employee.id, e.target.checked)}
-                        className="rounded border-gray-300"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {employee.name}
-                    </td>
-                    {dates.map((date, index) => (
-                      <td key={index} className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
-                        {employee.hours[date] || 0} h.
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
+              {renderTableContent()}
             </table>
-          </div>
-          
-          <div className="px-6 py-4 bg-gray-50 border-t">
-            <div className="text-sm text-gray-600">
-              Total — {employees.length}
-            </div>
           </div>
         </div>
       </div>
