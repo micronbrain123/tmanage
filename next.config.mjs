@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
+  eslint: {
+    rules: {
+      'react/no-unescaped-entities': 'off',
+    },
   },
-  images: {
-    domains: ['your-domain.com'], // Add your image domains
-  },
-}
+};
 
-export default nextConfig
+export default nextConfig;
