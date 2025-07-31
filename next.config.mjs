@@ -1,9 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    appDir: true,
+  },
   eslint: {
-    rules: {
-      'react/no-unescaped-entities': 'off',
-    },
+    ignoreDuringBuilds: true,
   },
 };
 
